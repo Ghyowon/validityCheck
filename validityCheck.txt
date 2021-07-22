@@ -1,0 +1,94 @@
+	$(function(){
+		
+		//아이디 중복체크
+		$('.idCheckLog').click(function(){ //keyup이벤트 사용하지 말기
+			//alert('a');
+	        $.ajax({
+	        	type : 'post',
+	        	url : 'idCheck.do', //idCheck.do로 이동(요청을 부름)
+	        	contentType : 'application/x-www-form-urlencoded;charset=UTF-8', //한글 안깨짐
+	        	data : {userID : $('.userID').val()}, //보내는 데이터 userId라는 이름하에 사용자 입력값을 받아온다
+	        	success : function(result){ //성공해서 함수연결
+	        		$('#idCheckResult').text(result) //서버를 주면 결과를 입력
+	        		//text() -> 글씨만 / html() ->태그까지 넣을 수 있음
+	        	}
+	        })
+	       
+		})
+		
+		//*************************************************************************************************
+		//비밀번호 중복체크
+		$("#alert-success").hide();
+		$("#alert-danger").hide();
+		$("#userPW,#userPW2").keyup(function(){
+			var pwd1=$("#userPW").val();
+			var pwd2=$("#userPW2").val();
+			if(pwd1 != "" || pwd2 != ""){
+				if(pwd1 == pwd2){
+					$("#alert-success").show();
+					$("#alert-danger").hide();
+					$("#confirm").removeAttr("disabled"); //submit버튼 비활성화 제거
+				}else{
+					$("#alert-success").hide();
+					$("#alert-danger").show();
+					$("#confirm").attr("disabled","disabled"); //submit버튼 비활성화
+				}
+			
+			}//end of if
+
+		})//end of ketup
+		
+	})//end of function
+	
+	function memberSubmit(check){
+		
+			// 아이디 입력여부 검사 
+		    var idRegExp = /^[a-zA-Z0-9]{4,12}$/; //아이디 유효성 검사
+		    
+		    if(check.userID.value=="")
+		    {
+		        alert("아이디를 입력하지 않았습니다.");
+	           	check.userID.value = "";
+		        check.userID.focus();
+		        return false;
+		    }else if (!idRegExp.test(check.userID.value)) {
+	            alert("아이디는 영문 대소문자와 숫자 4~12자리로 입력해야합니다!");
+	           	check.userID.value = "";
+	            check.userID.focus();
+	            return false;
+	        }
+		 /*else{
+	        	return true;
+	        }*/
+		
+	       
+	        // 비밀번호 유효성 검사
+			var pw = $("#userPW").val();
+		    var checkNumber = pw.search(/[0-9]/g);
+		    var checkEnglish = pw.search(/[a-z]/ig);
+		 
+		    if(check.userPW.value==""){
+		    	alert('비밀번호를 입력해주세요.');
+	           	check.userPW.value = "";
+	            check.userPW.focus();
+		        return false;
+		    }else if(!/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/.test(check.userPW.value)){            
+		        alert('숫자+영문자+특수문자 조합으로 8자리 이상 사용해야 합니다.');
+	           	check.userPW.value = "";
+	            check.userPW.focus();
+		        return false;
+		    }else if(checkNumber <0 || checkEnglish <0){
+		        alert("숫자와 영문자를 혼용하여야 합니다.");
+	           	check.userPW.value = "";
+	            check.userPW.focus();
+		        return false;
+		    }else if(/(\w)\1\1\1/.test(check.userPW.value)){
+		        alert('같은 문자를 4번 이상 사용하실 수 없습니다.');
+	           	check.userPW.value = "";
+	            check.userPW.focus();
+		        return false;
+		    }else{
+		    	return "redirect:Main";
+		    }
+	        
+		}
